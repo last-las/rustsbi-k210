@@ -48,7 +48,7 @@ pub fn execute_supervisor(supervisor_mepc: usize, a0: usize, a1: usize) -> ! {
             GeneratorState::Yielded(MachineTrap::ExternalInterrupt()) => unsafe {
                 mip::set_ssoft();
                 mie::clear_mext();
-                feature::call_supervisor_interrupt(ctx)
+                // feature::call_supervisor_interrupt(ctx)
             },
             GeneratorState::Yielded(MachineTrap::MachineTimer()) => {
                 feature::forward_supervisor_timer()
