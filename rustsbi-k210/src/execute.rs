@@ -3,7 +3,11 @@ use core::{
     ops::{Generator, GeneratorState},
     pin::Pin,
 };
-use riscv::register::scause::{Exception, Trap};
+use riscv::register::{
+    scause::{Exception, Trap},
+    mip,
+    mie,
+};
 
 use crate::feature;
 use crate::runtime::{MachineTrap, Runtime, SupervisorContext};
@@ -42,7 +46,8 @@ pub fn execute_supervisor(supervisor_mepc: usize, a0: usize, a1: usize) -> ! {
                 }
             }
             GeneratorState::Yielded(MachineTrap::ExternalInterrupt()) => unsafe {
-                let ctx = rt.context_mut();
+                mip::set_ssoft();
+                mie::clear_mext();
                 feature::call_supervisor_interrupt(ctx)
             },
             GeneratorState::Yielded(MachineTrap::MachineTimer()) => {
